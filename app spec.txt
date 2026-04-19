@@ -1,0 +1,881 @@
+# DOKUMEN KEBUTUHAN SISTEM
+## Aplikasi POS, Manajemen Stok, dan HPP  
+### Kedai Kopi Rumahan Skala Kecil
+
+---
+
+## 1. Informasi Umum Dokumen
+
+**Nama Dokumen**: Dokumen Kebutuhan Sistem POS, Stok, dan HPP  
+**Jenis Dokumen**: Software Requirements Document (SRD)  
+**Skala Usaha**: Kedai kopi rumahan skala kecil  
+**Platform**: Web-based application  
+**Perangkat Utama**: Tablet untuk kasir, laptopHP untuk owner  
+**Jumlah Pengguna**: 1 owneradmin dan 2 staffkasir  
+**Jumlah Menu Aktif Awal**: ±10 menu, dengan dukungan tambahkurang menu secara fleksibel  
+
+---
+
+## 2. Latar Belakang
+
+Usaha kedai kopi rumahan memerlukan sistem operasional yang sederhana namun terintegrasi untuk mendukung kegiatan penjualan, pengelolaan stok bahan baku, perhitungan harga pokok penjualan (HPP), serta pemantauan omzet dan laba usaha.
+
+Saat operasional masih dilakukan secara manual, beberapa kendala yang umum terjadi adalah:
+
+- stok bahan baku tidak terkontrol dengan baik,
+- pencatatan penjualan tidak rapi,
+- HPP menu tidak dihitung secara akurat,
+- sulit mengetahui laba usaha,
+- owner kesulitan memantau performa usaha secara cepat.
+
+Untuk itu dibutuhkan sebuah aplikasi berbasis web yang dapat digunakan sebagai sistem kasirPOS sekaligus sistem manajemen stok dan HPP.
+
+---
+
+## 3. Tujuan Sistem
+
+Sistem ini dirancang untuk memenuhi tujuan berikut:
+
+1. Mempermudah proses transaksi penjualan harian.
+2. Mengontrol stok bahan baku secara lebih akurat.
+3. Menghitung HPP setiap menu berdasarkan resep.
+4. Menghubungkan transaksi penjualan dengan pengurangan stok otomatis.
+5. Menyediakan laporan omzet dan laba secara harian, bulanan, dan tahunan.
+6. Menyediakan dashboard pemantauan usaha secara ringkas.
+7. Memberikan kemudahan penggunaan untuk bisnis skala kecil.
+
+---
+
+## 4. Ruang Lingkup Sistem
+
+Sistem mencakup modul-modul berikut:
+
+1. Login dan Hak Akses
+2. Master Data Menu
+3. Master Data Bahan Baku
+4. Master Satuan
+5. Resep  Bill of Materials (BOM)
+6. Perhitungan HPP
+7. Inventory  Stok
+8. Pembelian Bahan Baku
+9. Point of Sale (POS)  Kasir
+10. Histori Transaksi
+11. Laporan Omzet, Penjualan, Laba, dan Stok
+12. Dashboard Monitoring
+13. Export Laporan ke Excel dan PDF
+
+---
+
+## 5. Profil Pengguna Sistem
+
+### 5.1 Owner  Admin
+Pengguna dengan hak akses penuh terhadap sistem, meliputi:
+
+- mengelola data menu,
+- mengelola bahan baku,
+- mengelola resepHPP,
+- mengelola stok,
+- melihat dashboard,
+- melihat dan mengekspor laporan,
+- mengelola akun pengguna.
+
+### 5.2 Kasir  Staff
+Pengguna dengan hak akses operasional, meliputi:
+
+- login ke sistem,
+- menggunakan modul POS,
+- memproses transaksi penjualan,
+- melihat histori transaksi sesuai hak akses yang diberikan.
+
+---
+
+## 6. Kebutuhan Fungsional Sistem
+
+### 6.1 Modul Login dan Hak Akses
+
+Sistem harus mampu:
+
+- menyediakan halaman login,
+- memverifikasi usernameemail dan password,
+- membedakan role pengguna,
+- membatasi akses berdasarkan role,
+- menyediakan fitur logout.
+
+---
+
+### 6.2 Modul Master Data Menu
+
+Sistem harus mampu:
+
+- menambahkan menu baru,
+- mengubah data menu,
+- menonaktifkan menu,
+- menghapus menu bila diperlukan,
+- mengelompokkan menu berdasarkan kategori,
+- mengatur harga jual menu,
+- mendukung penambahan dan pengurangan jumlah menu sewaktu-waktu.
+
+#### Data minimal menu:
+- nama menu,
+- kategori,
+- harga jual,
+- status aktifnonaktif,
+- deskripsi (opsional),
+- foto menu (opsional).
+
+#### Contoh kategori:
+- kopi,
+- non-kopi,
+- snack,
+- add-on.
+
+---
+
+### 6.3 Modul Master Data Bahan Baku
+
+Sistem harus mampu:
+
+- menambahkan bahan baku secara custom,
+- mengubah data bahan baku,
+- menentukan satuan bahan,
+- mencatat stok saat ini,
+- menentukan stok minimum,
+- mencatat harga beli terakhir,
+- mencatat rata-rata harga beli,
+- menandai bahan aktif atau tidak aktif.
+
+#### Contoh bahan baku:
+- biji kopi,
+- susu,
+- gula aren,
+- syrup,
+- bubuk matcha,
+- es batu,
+- air,
+- cup,
+- tutup cup,
+- sedotan,
+- tisu.
+
+#### Data minimal bahan baku:
+- nama bahan,
+- kategori bahan,
+- satuan,
+- stok saat ini,
+- stok minimum,
+- harga beli terakhir,
+- rata-rata harga beli,
+- status aktif.
+
+---
+
+### 6.4 Modul Master Satuan
+
+Sistem harus mendukung satuan yang dapat ditentukan secara fleksibel, antara lain:
+
+- gram,
+- kilogram,
+- mililiter,
+- liter,
+- pcs,
+- pack,
+- botol.
+
+---
+
+### 6.5 Modul Resep  Bill of Materials (BOM)
+
+Sistem harus mampu:
+
+- menghubungkan setiap menu dengan bahan baku,
+- menentukan jumlah pemakaian bahan per menu,
+- memasukkan komponen kemasan ke dalam resep,
+- mendukung elemen tambahan atau custom yang memengaruhi bahan.
+
+#### Contoh resep menu Es Kopi Susu:
+- kopi: 18 gram,
+- susu: 120 ml,
+- gula aren: 20 ml,
+- es batu: 100 gram,
+- cup 16 oz: 1 pcs,
+- tutup cup: 1 pcs.
+
+---
+
+### 6.6 Modul Perhitungan HPP
+
+Sistem harus mampu:
+
+- menghitung HPP dasar setiap menu berdasarkan resep,
+- menghitung HPP tambahan akibat modifieradd-on,
+- memperbarui HPP bila harga bahan berubah,
+- menyimpan snapshot HPP pada saat transaksi terjadi,
+- menghitung laba kotor berdasarkan harga jual dan HPP.
+
+#### Rumus dasar:
+- **HPP menu** = jumlah seluruh biaya bahan dalam resep  
+- **Laba kotor** = harga jual - HPP
+
+---
+
+### 6.7 Modul Modifier  Custom POS
+
+Sistem harus mendukung elemen-elemen custom pada transaksi POS, antara lain:
+
+- ukuransize,
+- level gula,
+- level es,
+- topping,
+- extra shot,
+- catatan khusus,
+- diskon,
+- biaya tambahan (jika diperlukan).
+
+Modifier harus dapat:
+
+- menambah harga jual,
+- memengaruhi bahan baku,
+- memengaruhi HPP.
+
+#### Contoh modifier:
+- Size Regular,
+- Size Large,
+- Less Sugar,
+- Normal Sugar,
+- Extra Shot.
+
+---
+
+### 6.8 Modul Inventory  Stok
+
+Sistem harus mampu:
+
+- mencatat stok masuk,
+- mencatat stok keluar,
+- mencatat penyesuaian stok manual,
+- menyimpan histori seluruh pergerakan stok,
+- menampilkan stok minimum dan bahan yang hampir habis.
+
+---
+
+### 6.9 Modul Pembelian Bahan Baku
+
+Sistem harus mampu:
+
+- mencatat pembelian bahan baku,
+- menambah stok secara otomatis setelah pembelian disimpan,
+- mencatat harga beli,
+- menyimpan data supplier,
+- menyimpan histori pembelian.
+
+---
+
+### 6.10 Modul POS  Kasir
+
+Sistem harus mampu:
+
+- menampilkan daftar menu aktif,
+- mencari menu,
+- menambahkan menu ke keranjang,
+- mengatur jumlah item,
+- memilih modifier  custom,
+- menambahkan catatan transaksi,
+- menghitung subtotal,
+- menghitung diskon,
+- menghitung total pembayaran,
+- memilih metode pembayaran,
+- menghitung kembalian untuk pembayaran tunai,
+- menyimpan transaksi.
+
+#### Metode pembayaran awal:
+- Cash,
+- Transfer,
+- QRIS.
+
+---
+
+### 6.11 Modul Histori Transaksi
+
+Sistem harus mampu:
+
+- menampilkan daftar transaksi,
+- melakukan filter berdasarkan tanggal,
+- melakukan filter berdasarkan kasir,
+- menampilkan detail transaksi,
+- menampilkan detail item transaksi.
+
+---
+
+### 6.12 Modul Laporan
+
+Sistem harus menyediakan laporan sebagai berikut:
+
+#### 6.12.1 Laporan Omzet
+- omzet harian,
+- omzet bulanan,
+- omzet tahunan.
+
+#### 6.12.2 Laporan Penjualan
+- jumlah transaksi,
+- jumlah item terjual,
+- menu terlaris,
+- penjualan per kategori,
+- penjualan per metode pembayaran.
+
+#### 6.12.3 Laporan Laba
+- laba kotor harian,
+- laba kotor bulanan,
+- laba kotor tahunan,
+- laba per menu,
+- laba per transaksi.
+
+#### 6.12.4 Laporan Stok
+- stok saat ini,
+- stok minimum,
+- bahan hampir habis,
+- riwayat stok masuk,
+- riwayat stok keluar,
+- riwayat penyesuaian stok.
+
+---
+
+### 6.13 Modul Export
+
+Sistem harus mampu mengekspor laporan ke format:
+
+- Excel,
+- PDF.
+
+Laporan yang dapat diekspor meliputi:
+
+- laporan omzet,
+- laporan penjualan,
+- laporan laba,
+- laporan stok,
+- histori transaksi.
+
+---
+
+### 6.14 Modul Dashboard
+
+#### Dashboard Owner harus menampilkan:
+- omzet hari ini,
+- omzet bulan ini,
+- omzet tahun ini,
+- laba hari ini,
+- laba bulan ini,
+- jumlah transaksi hari ini,
+- menu terlaris,
+- daftar bahan dengan stok menipis,
+- grafik penjualan.
+
+#### Dashboard Kasir harus menampilkan:
+- jumlah transaksi hari ini,
+- jumlah order,
+- menu populer hari ini.
+
+---
+
+## 7. Kebutuhan Non-Fungsional
+
+### 7.1 Platform
+- Sistem berbasis web.
+- Sistem harus responsif pada laptop, tablet, dan smartphone.
+
+### 7.2 Kemudahan Penggunaan
+- Antarmuka sederhana dan mudah dipahami.
+- Cocok digunakan untuk bisnis skala kecil.
+- Alur transaksi harus cepat dan tidak rumit.
+
+### 7.3 Performa
+- Halaman POS harus ringan.
+- Pencarian menu harus cepat.
+- Proses transaksi harus responsif.
+
+### 7.4 Keamanan
+- Sistem mewajibkan login.
+- Password harus disimpan dalam bentuk terenkripsi.
+- Hak akses dibatasi sesuai role.
+
+### 7.5 Backup
+- Sistem sebaiknya mendukung backup data berkala.
+- Sistem sebaiknya mendukung proses restore data.
+
+---
+
+## 8. Aturan Bisnis
+
+1. Jumlah menu dapat bertambah dan berkurang sewaktu-waktu.
+2. Bahan baku harus dapat dimasukkan secara custom.
+3. Komponen kemasan harus dapat diperhitungkan dalam HPP.
+4. Stok bahan baku harus berkurang otomatis saat transaksi berhasil.
+5. Harga bahan baku dapat berubah sewaktu-waktu.
+6. HPP harus mengikuti harga bahan yang berlaku.
+7. Snapshot HPP harus disimpan saat transaksi untuk menjaga akurasi laporan historis.
+8. Stok tidak boleh minus tanpa otorisasi admin.
+9. Semua perubahan stok harus tercatat.
+10. Staff hanya dapat mengakses fitur sesuai role.
+
+---
+
+## 9. Entity Relationship Diagram (ERD)
+
+```mermaid
+erDiagram
+
+  USERS ||--o{ PURCHASES : creates
+  USERS ||--o{ SALES : handles
+  USERS ||--o{ STOCK_MOVEMENTS : records
+
+  PRODUCT_CATEGORIES ||--o{ PRODUCTS : has
+  UNITS ||--o{ INGREDIENTS : uses_unit
+
+  PRODUCTS ||--o{ PRODUCT_RECIPE_ITEMS : has_recipe
+  INGREDIENTS ||--o{ PRODUCT_RECIPE_ITEMS : used_in
+
+  MODIFIER_GROUPS ||--o{ MODIFIER_OPTIONS : contains
+  PRODUCTS ||--o{ PRODUCT_MODIFIER_GROUPS : allows
+  MODIFIER_GROUPS ||--o{ PRODUCT_MODIFIER_GROUPS : linked
+
+  MODIFIER_OPTIONS ||--o{ MODIFIER_OPTION_RECIPE_ITEMS : affects_recipe
+  INGREDIENTS ||--o{ MODIFIER_OPTION_RECIPE_ITEMS : consumed_by
+
+  SUPPLIERS ||--o{ PURCHASES : supplies
+  PURCHASES ||--o{ PURCHASE_ITEMS : has
+  INGREDIENTS ||--o{ PURCHASE_ITEMS : purchased
+
+  PAYMENT_METHODS ||--o{ SALES : used_by
+  SALES ||--o{ SALE_ITEMS : has
+  PRODUCTS ||--o{ SALE_ITEMS : sold_as
+
+  SALE_ITEMS ||--o{ SALE_ITEM_MODIFIERS : has
+  MODIFIER_OPTIONS ||--o{ SALE_ITEM_MODIFIERS : selected
+
+  INGREDIENTS ||--o{ STOCK_MOVEMENTS : moved
+
+10. Data Dictionary Struktur Tabel
+10.1 Tabel users
+Menyimpan data pengguna sistem.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama pengguna
+email	varchar	Emaillogin
+password_hash	varchar	Password terenkripsi
+role	varchar	admin cashier
+is_active	boolean	Status aktif
+created_at	timestamp	Waktu dibuat
+updated_at	timestamp	Waktu diperbarui
+10.2 Tabel product_categories
+Menyimpan kategori menu.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama kategori
+is_active	boolean	Status aktif
+10.3 Tabel units
+Menyimpan satuan bahan baku.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama satuan
+code	varchar	Kode satuan
+10.4 Tabel ingredients
+Menyimpan seluruh bahan baku.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama bahan
+unit_id	bigint	FK ke units
+current_stock	decimal	Stok saat ini
+min_stock	decimal	Stok minimum
+last_cost	decimal	Harga beli terakhir
+avg_cost	decimal	Harga rata-rata
+is_active	boolean	Status aktif
+created_at	timestamp	Waktu dibuat
+updated_at	timestamp	Waktu diperbarui
+10.5 Tabel products
+Menyimpan data menu.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+category_id	bigint	FK ke product_categories
+sku	varchar	Kode menu
+name	varchar	Nama menu
+selling_price	decimal	Harga jual
+description	text	Deskripsi
+is_active	boolean	Status aktif
+created_at	timestamp	Waktu dibuat
+updated_at	timestamp	Waktu diperbarui
+10.6 Tabel product_recipe_items
+Menyimpan resep dasar setiap menu.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+product_id	bigint	FK ke products
+ingredient_id	bigint	FK ke ingredients
+qty	decimal	Jumlah pemakaian bahan
+waste_pct	decimal	Persentase waste (opsional)
+10.7 Tabel modifier_groups
+Menyimpan kelompok modifiercustom.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama grup modifier
+type	varchar	Tipe modifier
+is_required	boolean	Wajib dipilih atau tidak
+is_multiple	boolean	Boleh pilih lebih dari satu
+is_active	boolean	Status aktif
+10.8 Tabel modifier_options
+Menyimpan pilihan dari setiap modifier group.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+group_id	bigint	FK ke modifier_groups
+name	varchar	Nama opsi
+price_adjustment	decimal	Penyesuaian harga
+is_active	boolean	Status aktif
+10.9 Tabel product_modifier_groups
+Relasi antara menu dan modifier group.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+product_id	bigint	FK ke products
+group_id	bigint	FK ke modifier_groups
+sort_order	int	Urutan tampil
+10.10 Tabel modifier_option_recipe_items
+Menyimpan pengaruh modifier terhadap bahan baku.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+option_id	bigint	FK ke modifier_options
+ingredient_id	bigint	FK ke ingredients
+qty_delta	decimal	Penambahanpengurangan pemakaian bahan
+10.11 Tabel suppliers
+Menyimpan data supplier.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama supplier
+phone	varchar	Nomor telepon
+address	text	Alamat
+is_active	boolean	Status aktif
+10.12 Tabel purchases
+Header pembelian bahan baku.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+purchase_no	varchar	Nomor pembelian
+supplier_id	bigint	FK ke suppliers
+created_by	bigint	FK ke users
+purchase_date	date	Tanggal pembelian
+subtotal	decimal	Subtotal pembelian
+total	decimal	Total pembelian
+notes	text	Catatan
+10.13 Tabel purchase_items
+Detail item pembelian bahan baku.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+purchase_id	bigint	FK ke purchases
+ingredient_id	bigint	FK ke ingredients
+qty	decimal	Jumlah beli
+unit_cost	decimal	Harga per unit
+line_total	decimal	Total per item
+10.14 Tabel payment_methods
+Master metode pembayaran.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+name	varchar	Nama metode pembayaran
+is_active	boolean	Status aktif
+10.15 Tabel sales
+Header transaksi penjualan.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+invoice_no	varchar	Nomor invoice
+cashier_id	bigint	FK ke users
+payment_method_id	bigint	FK ke payment_methods
+sold_at	datetime	Waktu transaksi
+customer_name	varchar	Nama pelanggan (opsional)
+subtotal	decimal	Subtotal
+discount_amount	decimal	Diskon
+total	decimal	Total bayar
+hpp_total	decimal	Total HPP transaksi
+profit_total	decimal	Total laba kotor
+cash_received	decimal	Uang diterima
+change_amount	decimal	Kembalian
+notes	text	Catatan
+10.16 Tabel sale_items
+Detail item pada transaksi penjualan.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+sale_id	bigint	FK ke sales
+product_id	bigint	FK ke products
+qty	int	Jumlah item
+unit_price	decimal	Harga jual per item
+unit_hpp_snapshot	decimal	Snapshot HPP per item
+line_total	decimal	Total harga item
+line_hpp	decimal	Total HPP item
+line_profit	decimal	Laba item
+notes	text	Catatan item
+10.17 Tabel sale_item_modifiers
+Modifier yang dipilih untuk item transaksi.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+sale_item_id	bigint	FK ke sale_items
+option_id	bigint	FK ke modifier_options
+option_name_snapshot	varchar	Nama opsi saat transaksi
+price_adjustment	decimal	Penyesuaian harga
+hpp_adjustment	decimal	Penyesuaian HPP
+10.18 Tabel stock_movements
+Audit seluruh pergerakan stok.
+
+Field	Tipe	Keterangan
+id	bigint	Primary key
+ingredient_id	bigint	FK ke ingredients
+movement_type	varchar	Jenis pergerakan
+qty_in	decimal	Jumlah masuk
+qty_out	decimal	Jumlah keluar
+balance_after	decimal	Saldo stok setelah perubahan
+ref_type	varchar	Referensi dokumen
+ref_id	bigint	ID referensi
+created_by	bigint	FK ke users
+created_at	datetime	Waktu pencatatan
+notes	text	Catatan
+11. Relasi Antar Tabel
+products.category_id → product_categories.id
+ingredients.unit_id → units.id
+product_recipe_items.product_id → products.id
+product_recipe_items.ingredient_id → ingredients.id
+modifier_options.group_id → modifier_groups.id
+product_modifier_groups.product_id → products.id
+product_modifier_groups.group_id → modifier_groups.id
+modifier_option_recipe_items.option_id → modifier_options.id
+modifier_option_recipe_items.ingredient_id → ingredients.id
+purchases.supplier_id → suppliers.id
+purchase_items.purchase_id → purchases.id
+purchase_items.ingredient_id → ingredients.id
+sales.cashier_id → users.id
+sales.payment_method_id → payment_methods.id
+sale_items.sale_id → sales.id
+sale_items.product_id → products.id
+sale_item_modifiers.sale_item_id → sale_items.id
+sale_item_modifiers.option_id → modifier_options.id
+stock_movements.ingredient_id → ingredients.id
+12. Alur Perhitungan HPP
+12.1 HPP Dasar Menu
+HPP dasar dihitung dari resep menu.
+
+Rumus:
+biaya bahan = qty bahan × harga bahan
+HPP dasar = total seluruh biaya bahan
+Contoh:
+Menu Es Kopi Susu memiliki komponen:
+
+kopi 18 gr = Rp2.500
+susu 120 ml = Rp3.000
+gula aren 20 ml = Rp1.000
+es batu = Rp200
+cup = Rp500
+tutup = Rp300
+Maka:
+
+HPP dasar = Rp7.500
+12.2 HPP dari Modifier
+Jika pelanggan memilih custom yang memengaruhi bahan, maka HPP akan bertambah.
+
+Contoh:
+Extra Shot → tambah kopi 18 gr = Rp2.500
+Size Large → tambah susu 40 ml + cup besar = Rp1.800
+Rumus:
+HPP final = HPP dasar + HPP modifier
+12.3 HPP Saat Transaksi
+Pada saat transaksi disimpan, sistem harus:
+
+mengambil resep dasar menu,
+menghitung HPP dasar,
+membaca modifier yang dipilih,
+menghitung tambahan HPP modifier,
+menyimpan nilai HPP final ke sale_items.unit_hpp_snapshot.
+Tujuan penyimpanan snapshot adalah agar laporan historis tidak berubah meskipun harga bahan di masa depan berubah.
+
+12.4 Perhitungan Laba
+Rumus:
+line_profit = line_total - line_hpp
+profit_total = total transaksi - hpp_total
+13. Alur Pengelolaan Stok
+13.1 Stok Masuk dari Pembelian
+Alur proses:
+
+Admin mencatat pembelian bahan.
+Data header disimpan ke tabel purchases.
+Detail pembelian disimpan ke tabel purchase_items.
+Stok bahan di tabel ingredients.current_stock bertambah.
+Sistem mencatat histori ke tabel stock_movements.
+Contoh:
+Admin membeli susu 12 liter, maka:
+
+stok susu bertambah,
+histori tercatat dengan tipe movement purchase.
+13.2 Stok Keluar dari Penjualan
+Alur proses:
+
+Kasir melakukan transaksi pada POS.
+Data transaksi disimpan ke tabel sales.
+Detail item transaksi disimpan ke tabel sale_items.
+Sistem membaca resep dasar dan modifier.
+Sistem mengurangi stok bahan baku sesuai jumlah pemakaian.
+Sistem mencatat histori ke tabel stock_movements.
+Contoh:
+Penjualan 1 Es Kopi Susu menyebabkan:
+
+kopi berkurang 18 gr,
+susu berkurang 120 ml,
+gula aren berkurang 20 ml,
+cup berkurang 1 pcs,
+tutup berkurang 1 pcs.
+13.3 Penyesuaian Stok Manual
+Penyesuaian manual diperlukan jika terjadi:
+
+stok fisik tidak sesuai,
+bahan rusak,
+bahan terbuang,
+kesalahan input.
+Alur proses:
+
+Admin melakukan penyesuaian stok.
+Sistem memperbarui ingredients.current_stock.
+Sistem mencatat histori ke stock_movements.
+Alasan penyesuaian disimpan.
+Contoh tipe movement:
+adjustment_in
+adjustment_out
+waste
+opname
+13.4 Stok Minimum
+Sistem harus membandingkan:
+
+current_stock
+min_stock
+Jika current_stock <= min_stock, maka bahan tersebut harus:
+
+ditampilkan pada dashboard,
+masuk daftar stok menipis,
+muncul pada laporan stok.
+14. Alur Proses Bisnis End-to-End
+14.1 Setup Awal
+Admin membuat akun pengguna.
+Admin mengisi master satuan.
+Admin mengisi master bahan baku.
+Admin mengisi kategori menu.
+Admin mengisi menu.
+Admin membuat resep per menu.
+Admin membuat modifier bila diperlukan.
+Admin mengisi metode pembayaran.
+14.2 Operasional Harian
+Admin mencatat stok masuk jika ada pembelian bahan.
+Kasir membuka halaman POS.
+Kasir memilih menu yang dipesan.
+Kasir memilih custommodifier jika ada.
+Sistem menghitung total harga dan HPP.
+Pembayaran diproses.
+Sistem menyimpan transaksi.
+Sistem mengurangi stok bahan otomatis.
+Dashboard dan laporan diperbarui.
+15. Contoh Skenario Nyata
+Kasus
+Pelanggan membeli:
+
+1 Es Kopi Susu Large
+Extra Shot
+metode pembayaran QRIS
+Resep dasar Es Kopi Susu
+kopi 18 gr
+susu 120 ml
+gula aren 20 ml
+es batu 100 gr
+cup regular 1 pcs
+tutup 1 pcs
+Modifier Large
+tambah susu 40 ml
+ganti cup large 1 pcs
+Modifier Extra Shot
+tambah kopi 18 gr
+Harga jual
+harga dasar: Rp18.000
+Large: +Rp3.000
+Extra Shot: +Rp4.000
+total jual: Rp25.000
+HPP
+HPP dasar: Rp7.500
+tambahan Large: Rp1.800
+tambahan Extra Shot: Rp2.500
+HPP final: Rp11.800
+Laba kotor
+laba = Rp25.000 - Rp11.800 = Rp13.200
+Pengurangan stok
+kopi: 36 gr
+susu: 160 ml
+gula aren: 20 ml
+es batu: 100 gr
+cup large: 1 pcs
+tutup: 1 pcs
+16. Dashboard yang Direkomendasikan
+16.1 Dashboard Owner
+Komponen dashboard:
+
+omzet hari ini,
+omzet bulan ini,
+omzet tahun ini,
+laba hari ini,
+laba bulan ini,
+total transaksi hari ini,
+top menu,
+stok menipis,
+grafik omzet 7 hari terakhir,
+grafik omzet bulanan,
+grafik top 5 menu,
+grafik metode pembayaran.
+16.2 Dashboard Kasir
+Komponen dashboard:
+
+jumlah transaksi hari ini,
+jumlah item terjual,
+menu populer hari ini.
+17. Prioritas Implementasi
+17.1 Tahap 1 (MVP)
+Fitur wajib:
+
+login,
+role admin dan kasir,
+master bahan baku,
+master menu,
+resepHPP,
+stok masuk,
+POS,
+pengurangan stok otomatis,
+laporan omzet,
+laporan laba,
+dashboard ringkas,
+export ExcelPDF.
+17.2 Tahap 2
+Fitur lanjutan:
+
+notifikasi stok minimum,
+stock opname,
+audit log lebih detail,
+promo dan diskon lanjutan,
+data pelanggan.
+18. Kesimpulan
+Sistem ini dirancang untuk memenuhi kebutuhan kedai kopi rumahan skala kecil yang membutuhkan:
+
+aplikasi kasir berbasis web,
+manajemen stok bahan baku,
+perhitungan HPP yang akurat,
+laporan omzet dan laba yang terintegrasi,
+dashboard pemantauan usaha,
+penggunaan sederhana melalui tablet kasir.
