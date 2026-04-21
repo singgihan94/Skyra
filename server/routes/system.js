@@ -6,7 +6,11 @@ const { authenticate, requireRole } = require('../middleware/auth');
 // Helper to verify system password
 async function verifySystemPassword(password) {
   const settings = await db.prepare('SELECT system_password FROM store_settings WHERE id = 1').get();
-  return settings && settings.system_password === password;
+  if (!settings) return false;
+  // Ensure we compare strings and trim any whitespace
+  const storedPwd = String(settings.system_password || '123456').trim();
+  const inputPwd = String(password || '').trim();
+  return storedPwd === inputPwd;
 }
 
 // POST /api/system/clear-transactions - Clear all sales and stock logs
@@ -64,9 +68,13 @@ router.post('/reset-all', authenticate, requireRole('admin'), async (req, res) =
       ];
 
       for (const table of tablesToClear) {
-        await db.prepare(`DELETE FROM ${table}`).run();
-        // Reset autoincrement
-        await db.prepare(`DELETE FROM sqlite_sequence WHERE name = ?`).run(table);
+        try {
+          await db.prepare(`DELETE FROM ${table}`).run();
+          // Reset autoincrement
+          await db.prepare(`DELETE FROM sqlite_sequence WHERE name = ?`).run(table);
+        } catch (e) {
+          console.warn(`[System Reset] Could not clear table ${table}:`, e.message);
+        }
       }
 
       // Re-seed essential master data

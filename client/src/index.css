@@ -118,9 +118,16 @@ a:hover { color: var(--accent-gold-hover); }
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: transform var(--transition-normal);
+  transition: transform var(--transition-normal), width var(--transition-normal);
   z-index: 100;
+  overflow-x: hidden;
 }
+
+.app-sidebar:not(.open) {
+  width: 0;
+  border-right: none;
+}
+
 
 .app-main {
   flex: 1;
@@ -188,7 +195,9 @@ a:hover { color: var(--accent-gold-hover); }
   flex: 1;
   padding: 12px;
   overflow-y: auto;
+  padding-bottom: 120px; /* Jeda agar menu bawah tidak terpotong */
 }
+
 
 .sidebar-section {
   margin-bottom: 8px;
@@ -320,13 +329,14 @@ a:hover { color: var(--accent-gold-hover); }
 }
 
 .menu-toggle {
-  display: none;
+  display: block; /* Selalu tampilkan agar bisa buka tutup di desktop */
   background: transparent;
   border: none;
   color: var(--text-primary);
   cursor: pointer;
   padding: 6px;
 }
+
 
 /* ─── Cards ────────────────────────────────────────────────────── */
 .card {
@@ -1167,6 +1177,7 @@ a:hover { color: var(--accent-gold-hover); }
     left: 0;
     top: 0;
     bottom: 0;
+    width: var(--sidebar-width) !important;
     transform: translateX(-100%);
   }
 
@@ -1176,14 +1187,25 @@ a:hover { color: var(--accent-gold-hover); }
 
   .menu-toggle { display: block; }
 
+
   .pos-layout {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100dvh - var(--topbar-height));
+    overflow: visible;
+    gap: 0; /* Rapatkan pada mobile */
   }
+
+
 
   .pos-cart {
     border-left: none;
     border-top: 1px solid var(--border-color);
+    padding-bottom: 80px; /* Jeda aman untuk tombol bayar di mobile */
+    height: auto;
+    overflow: visible;
   }
+
 
   .form-row { grid-template-columns: 1fr; }
 

@@ -84,15 +84,19 @@ export default function Settings() {
   }
 
   async function handleClearTransactions() {
+    console.log('--- CLEAR TRANSACTIONS TRIGGERED ---');
     const pwd = window.prompt('Peringatan: Ini akan menghapus seluruh riwayat pesanan dan mutasi stok.\n\nMasukkan Password Sistem untuk melanjutkan:');
-    if (!pwd) return;
+    if (pwd === null) return; // User clicked Cancel
 
     if (window.confirm('Apakah Anda benar-benar yakin ingin menghapus SEMUA transaksi? Tindakan ini tidak dapat dibatalkan.')) {
       try {
+        console.log('Sending clear request with pwd:', pwd);
         setSaving(true);
         const res = await api.post('/api/system/clear-transactions', { password: pwd });
+        console.log('Clear response:', res);
         showToast(res.message);
       } catch (err) {
+        console.error('Clear error:', err);
         showToast(err.message, 'error');
       } finally {
         setSaving(false);
@@ -101,16 +105,20 @@ export default function Settings() {
   }
 
   async function handleResetDatabase() {
+    console.log('--- RESET DATABASE TRIGGERED ---');
     const pwd = window.prompt('PERINGATAN KERAS: Ini akan menghapus SELURUH data (Produk, Bahan Baku, dll).\n\nMasukkan Password Sistem untuk melanjutkan:');
-    if (!pwd) return;
+    if (pwd === null) return;
 
     if (window.confirm('TINDAKAN SANGAT BERBAHAYA!\nSemua data menu dan inventaris akan musnah. Anda harus menginput ulang dari nol.\n\nLanjutkan reset total?')) {
       try {
+        console.log('Sending reset request with pwd:', pwd);
         setSaving(true);
         const res = await api.post('/api/system/reset-all', { password: pwd });
+        console.log('Reset response:', res);
         showToast(res.message);
         setTimeout(() => window.location.reload(), 2000);
       } catch (err) {
+        console.error('Reset error:', err);
         showToast(err.message, 'error');
       } finally {
         setSaving(false);

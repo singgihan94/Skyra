@@ -79,7 +79,7 @@ export default function Transactions() {
         try {
           const logoUrl = storeSettings.store_logo_url.startsWith('http')
             ? storeSettings.store_logo_url
-            : `${window.location.protocol}//${window.location.hostname}:3001${storeSettings.store_logo_url}`;
+            : `${window.location.origin}${storeSettings.store_logo_url}`;
           const logoCmds = await imageToEscPos(logoUrl, 200, { text: storeSettings.store_name });
           cmds = cmds.concat(logoCmds);
           cmds.push(encoder.encode('\n'));

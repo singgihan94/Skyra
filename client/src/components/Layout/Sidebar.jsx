@@ -62,8 +62,7 @@ export default function Sidebar({ open, onClose }) {
   return (
     <>
       {open && <div className="sidebar-backdrop" onClick={onClose} style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 99,
-        display: 'none'
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 99
       }} />}
       <aside className={`app-sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-logo">

@@ -21,7 +21,7 @@ async function start() {
   ].filter(Boolean);
 
   app.use(cors({ 
-    origin: isProd ? true : allowedOrigins, 
+    origin: isProd ? (process.env.PRODUCTION_URL || true) : allowedOrigins, 
     credentials: true 
   }));
   app.use(express.json());
