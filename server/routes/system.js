@@ -23,18 +23,21 @@ router.post('/clear-transactions', authenticate, requireRole('admin'), async (re
     if (!isValid) return res.status(401).json({ error: 'Password sistem salah!' });
 
     await db.transaction(async () => {
-      // 1. Clear sales related data
-      await db.prepare('DELETE FROM sale_item_modifiers').run();
-      await db.prepare('DELETE FROM sale_items').run();
-      await db.prepare('DELETE FROM sales').run();
-      
-      // 2. Clear stock movements
-      await db.prepare('DELETE FROM stock_movements').run();
-      
-      // 3. Clear shifts/performance data
-      await db.prepare('DELETE FROM cashier_shifts').run();
-      
-      // 4. Reset ingredient stock to 0
+      const tablesToClear = [
+        'sale_item_modifiers', 'sale_items', 'sales',
+        'stock_movements', 'cashier_shifts'
+      ];
+
+      for (const table of tablesToClear) {
+        try {
+          await db.prepare(`DELETE FROM ${table}`).run();
+          await db.prepare(`DELETE FROM sqlite_sequence WHERE name = ?`).run(table);
+        } catch (e) {
+          console.warn(`[System Clear] Could not clear table ${table}:`, e.message);
+        }
+      }
+
+      // Reset ingredient stock to 0
       await db.prepare('UPDATE ingredients SET current_stock = 0').run();
 
       console.log('✅ Transactions and Stock Logs cleared by admin');

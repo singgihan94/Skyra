@@ -14,7 +14,7 @@ router.get('/revenue', authenticate, requireRole('admin'), async (req, res) => {
       sql = `
         SELECT date(sold_at) as date, SUM(total) as revenue, SUM(hpp_total) as hpp, SUM(profit_total) as profit, COUNT(*) as transactions
         FROM sales
-        WHERE date(sold_at) >= ? AND date(sold_at) <= ?
+        WHERE date(sold_at) >= ? AND date(sold_at) <= ? AND status = 'success'
         GROUP BY date(sold_at) ORDER BY date(sold_at) DESC
       `;
       params = [date_from || new Date().toISOString().slice(0, 10), date_to || new Date().toISOString().slice(0, 10)];
@@ -22,12 +22,14 @@ router.get('/revenue', authenticate, requireRole('admin'), async (req, res) => {
       sql = `
         SELECT strftime('%Y-%m', sold_at) as month, SUM(total) as revenue, SUM(hpp_total) as hpp, SUM(profit_total) as profit, COUNT(*) as transactions
         FROM sales
+        WHERE status = 'success'
         GROUP BY strftime('%Y-%m', sold_at) ORDER BY month DESC LIMIT 12
       `;
     } else {
       sql = `
         SELECT strftime('%Y', sold_at) as year, SUM(total) as revenue, SUM(hpp_total) as hpp, SUM(profit_total) as profit, COUNT(*) as transactions
         FROM sales
+        WHERE status = 'success'
         GROUP BY strftime('%Y', sold_at) ORDER BY year DESC
       `;
     }
@@ -49,7 +51,7 @@ router.get('/sales-by-product', authenticate, requireRole('admin'), async (req, 
       JOIN products p ON si.product_id = p.id
       LEFT JOIN product_categories c ON p.category_id = c.id
       JOIN sales s ON si.sale_id = s.id
-      WHERE 1=1
+      WHERE s.status = 'success'
     `;
     const params = [];
     if (date_from) { sql += ' AND date(s.sold_at) >= ?'; params.push(date_from); }
@@ -73,7 +75,7 @@ router.get('/sales-by-category', authenticate, requireRole('admin'), async (req,
       JOIN products p ON si.product_id = p.id
       LEFT JOIN product_categories c ON p.category_id = c.id
       JOIN sales s ON si.sale_id = s.id
-      WHERE 1=1
+      WHERE s.status = 'success'
     `;
     const params = [];
     if (date_from) { sql += ' AND date(s.sold_at) >= ?'; params.push(date_from); }
@@ -95,7 +97,7 @@ router.get('/sales-by-payment', authenticate, requireRole('admin'), async (req, 
       SELECT pm.name as method, COUNT(*) as count, SUM(s.total) as total
       FROM sales s
       JOIN payment_methods pm ON s.payment_method_id = pm.id
-      WHERE 1=1
+      WHERE s.status = 'success'
     `;
     const params = [];
     if (date_from) { sql += ' AND date(s.sold_at) >= ?'; params.push(date_from); }
