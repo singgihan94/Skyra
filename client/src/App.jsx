@@ -35,6 +35,13 @@ function AdminRoute({ children }) {
   return children;
 }
 
+function PermissionRoute({ permission, children }) {
+  const { user, isAdmin } = useAuth();
+  if (isAdmin) return children;
+  if (user?.permissions?.includes(permission)) return children;
+  return <Navigate to="/" replace />;
+}
+
 function AppRoutes() {
   const { user, loading } = useAuth();
   if (loading) return <div className="flex-center" style={{ height: '100vh' }}><div className="text-gold">Loading...</div></div>;
@@ -45,20 +52,20 @@ function AppRoutes() {
       <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/pos" element={<POS />} />
-        <Route path="/menu" element={<AdminRoute><MenuManager /></AdminRoute>} />
-        <Route path="/ingredients" element={<AdminRoute><Ingredients /></AdminRoute>} />
-        <Route path="/recipes" element={<AdminRoute><Recipes /></AdminRoute>} />
-        <Route path="/categories" element={<AdminRoute><Categories /></AdminRoute>} />
-        <Route path="/units" element={<AdminRoute><Units /></AdminRoute>} />
-        <Route path="/modifiers" element={<AdminRoute><Modifiers /></AdminRoute>} />
-        <Route path="/suppliers" element={<AdminRoute><Suppliers /></AdminRoute>} />
-        <Route path="/purchases" element={<AdminRoute><Purchases /></AdminRoute>} />
+        <Route path="/menu" element={<PermissionRoute permission="manage_menu"><MenuManager /></PermissionRoute>} />
+        <Route path="/ingredients" element={<PermissionRoute permission="manage_stock"><Ingredients /></PermissionRoute>} />
+        <Route path="/recipes" element={<PermissionRoute permission="manage_recipes"><Recipes /></PermissionRoute>} />
+        <Route path="/categories" element={<PermissionRoute permission="manage_menu"><Categories /></PermissionRoute>} />
+        <Route path="/units" element={<PermissionRoute permission="manage_menu"><Units /></PermissionRoute>} />
+        <Route path="/modifiers" element={<PermissionRoute permission="manage_menu"><Modifiers /></PermissionRoute>} />
+        <Route path="/suppliers" element={<PermissionRoute permission="manage_stock"><Suppliers /></PermissionRoute>} />
+        <Route path="/purchases" element={<PermissionRoute permission="manage_purchases"><Purchases /></PermissionRoute>} />
         <Route path="/transactions" element={<Transactions />} />
-        <Route path="/transactions-void" element={<AdminRoute><TransactionsVoid /></AdminRoute>} />
-        <Route path="/reports" element={<AdminRoute><Reports /></AdminRoute>} />
-        <Route path="/cashier-performance" element={<AdminRoute><CashierPerformance /></AdminRoute>} />
-        <Route path="/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
-        <Route path="/settings" element={<AdminRoute><Settings /></AdminRoute>} />
+        <Route path="/transactions-void" element={<PermissionRoute permission="manage_users"><TransactionsVoid /></PermissionRoute>} />
+        <Route path="/reports" element={<PermissionRoute permission="view_reports"><Reports /></PermissionRoute>} />
+        <Route path="/cashier-performance" element={<PermissionRoute permission="manage_users"><CashierPerformance /></PermissionRoute>} />
+        <Route path="/users" element={<PermissionRoute permission="manage_users"><UsersPage /></PermissionRoute>} />
+        <Route path="/settings" element={<PermissionRoute permission="manage_settings"><Settings /></PermissionRoute>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
