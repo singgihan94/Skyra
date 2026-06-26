@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../db').getDb();
-const { authenticate, requireRole } = require('../middleware/auth');
+const { authenticate, requirePermission } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.get('/:productId', authenticate, async (req, res) => {
 });
 
 // PUT /api/recipes/:productId - save recipe (replaces all items)
-router.put('/:productId', authenticate, requireRole('admin'), async (req, res) => {
+router.put('/:productId', authenticate, requirePermission('manage_recipes'), async (req, res) => {
   try {
     const { items } = req.body; // [{ ingredient_id, qty, waste_pct }]
     if (!Array.isArray(items)) return res.status(400).json({ error: 'Items harus berupa array.' });

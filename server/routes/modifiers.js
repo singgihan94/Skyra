@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../db').getDb();
-const { authenticate, requireRole } = require('../middleware/auth');
+const { authenticate, requirePermission } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get('/groups', authenticate, async (req, res) => {
 });
 
 // POST /api/modifiers/groups
-router.post('/groups', authenticate, requireRole('admin'), async (req, res) => {
+router.post('/groups', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { name, type, is_required, is_multiple } = req.body;
     if (!name) return res.status(400).json({ error: 'Nama group wajib.' });
@@ -33,7 +33,7 @@ router.post('/groups', authenticate, requireRole('admin'), async (req, res) => {
 });
 
 // PUT /api/modifiers/groups/:id
-router.put('/groups/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.put('/groups/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { name, type, is_required, is_multiple, is_active } = req.body;
     await db.prepare(
@@ -46,7 +46,7 @@ router.put('/groups/:id', authenticate, requireRole('admin'), async (req, res) =
 });
 
 // DELETE /api/modifiers/groups/:id
-router.delete('/groups/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.delete('/groups/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     await db.prepare('DELETE FROM modifier_groups WHERE id = ?').run(req.params.id);
     res.json({ message: 'Group berhasil dihapus.' });
@@ -58,7 +58,7 @@ router.delete('/groups/:id', authenticate, requireRole('admin'), async (req, res
 // ─── MODIFIER OPTIONS ───────────────────────────────────────────────
 
 // POST /api/modifiers/options
-router.post('/options', authenticate, requireRole('admin'), async (req, res) => {
+router.post('/options', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { group_id, name, price_adjustment } = req.body;
     if (!group_id || !name) return res.status(400).json({ error: 'Group dan nama wajib.' });
@@ -72,7 +72,7 @@ router.post('/options', authenticate, requireRole('admin'), async (req, res) => 
 });
 
 // PUT /api/modifiers/options/:id
-router.put('/options/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.put('/options/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { name, price_adjustment, is_active } = req.body;
     await db.prepare('UPDATE modifier_options SET name=?, price_adjustment=?, is_active=? WHERE id=?')
@@ -84,7 +84,7 @@ router.put('/options/:id', authenticate, requireRole('admin'), async (req, res) 
 });
 
 // DELETE /api/modifiers/options/:id
-router.delete('/options/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.delete('/options/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     await db.prepare('DELETE FROM modifier_options WHERE id = ?').run(req.params.id);
     res.json({ message: 'Option berhasil dihapus.' });
@@ -112,7 +112,7 @@ router.get('/options/:optionId/recipe', authenticate, async (req, res) => {
 });
 
 // PUT /api/modifiers/options/:optionId/recipe
-router.put('/options/:optionId/recipe', authenticate, requireRole('admin'), async (req, res) => {
+router.put('/options/:optionId/recipe', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { items } = req.body; // [{ ingredient_id, qty_delta }]
     const deleteStmt = db.prepare('DELETE FROM modifier_option_recipe_items WHERE option_id = ?');
@@ -154,7 +154,7 @@ router.get('/product/:productId', authenticate, async (req, res) => {
 });
 
 // PUT /api/modifiers/product/:productId
-router.put('/product/:productId', authenticate, requireRole('admin'), async (req, res) => {
+router.put('/product/:productId', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { groups } = req.body; // [{ group_id, sort_order }]
     const deleteStmt = db.prepare('DELETE FROM product_modifier_groups WHERE product_id = ?');

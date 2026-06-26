@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { Plus, Edit2, X, ShieldCheck } from 'lucide-react';
+import { Plus, Edit2, X, ShieldCheck, Trash2 } from 'lucide-react';
 
 const availablePermissions = [
   { id: 'manage_menu', label: 'Kelola Menu' },
@@ -45,6 +45,17 @@ export default function UsersPage() {
     await api.put(`/api/users/${u.id}`, { ...u, is_active: u.is_active ? 0 : 1 }); load();
   }
 
+  async function handleDelete(u) {
+    if (!window.confirm(`Hapus pengguna ${u.name}?`)) return;
+    try {
+      await api.delete(`/api/users/${u.id}`);
+      alert('Pengguna berhasil dihapus.');
+      load();
+    } catch (err) {
+      alert(err.message || 'Gagal menghapus pengguna.');
+    }
+  }
+
   function handlePermissionToggle(permId) {
     setForm(prev => {
       const perms = prev.permissions.includes(permId)
@@ -81,7 +92,10 @@ export default function UsersPage() {
                     {u.is_active ? 'Aktif' : 'Nonaktif'}
                   </button>
                 </td>
-                <td><button className="btn btn-ghost btn-icon" onClick={() => { setForm({ name: u.name, email: u.email, password: '', role: u.role, is_active: u.is_active, permissions: u.permissions || [] }); setEditing(u); setShowModal(true); }}><Edit2 size={14} /></button></td>
+                <td>
+                  <button className="btn btn-ghost btn-icon" onClick={() => { setForm({ name: u.name, email: u.email, password: '', role: u.role, is_active: u.is_active, permissions: u.permissions || [] }); setEditing(u); setShowModal(true); }}><Edit2 size={14} /></button>
+                  <button className="btn btn-ghost btn-icon" style={{ color: 'var(--danger-color)' }} onClick={() => handleDelete(u)}><Trash2 size={14} /></button>
+                </td>
               </tr>
             ))}
           </tbody>

@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../db').getDb();
-const { authenticate, requireRole } = require('../middleware/auth');
+const { authenticate, requirePermission } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // POST /api/units
-router.post('/', authenticate, requireRole('admin'), async (req, res) => {
+router.post('/', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { name, code } = req.body;
     if (!name || !code) return res.status(400).json({ error: 'Nama dan kode satuan wajib.' });
@@ -28,7 +28,7 @@ router.post('/', authenticate, requireRole('admin'), async (req, res) => {
 });
 
 // PUT /api/units/:id
-router.put('/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.put('/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const { name, code } = req.body;
     await db.prepare('UPDATE units SET name=?, code=? WHERE id=?').run(name, code, req.params.id);
@@ -39,7 +39,7 @@ router.put('/:id', authenticate, requireRole('admin'), async (req, res) => {
 });
 
 // DELETE /api/units/:id
-router.delete('/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.delete('/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     const used = await db.prepare('SELECT id FROM ingredients WHERE unit_id = ? LIMIT 1').get(req.params.id);
     if (used) return res.status(400).json({ error: 'Satuan masih digunakan oleh bahan baku.' });

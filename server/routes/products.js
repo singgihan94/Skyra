@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../db').getDb();
-const { authenticate, requireRole } = require('../middleware/auth');
+const { authenticate, requirePermission } = require('../middleware/auth');
 
 const router = express.Router();
 const multer = require('multer');
@@ -106,7 +106,7 @@ router.get('/:id', authenticate, async (req, res) => {
 });
 
 // POST /api/products
-router.post('/', authenticate, requireRole('admin'), upload.single('image'), async (req, res) => {
+router.post('/', authenticate, requirePermission('manage_menu'), upload.single('image'), async (req, res) => {
   try {
     const { category_id, sku, name, selling_price, description } = req.body;
     if (!name || !category_id) return res.status(400).json({ error: 'Nama dan kategori wajib.' });
@@ -124,7 +124,7 @@ router.post('/', authenticate, requireRole('admin'), upload.single('image'), asy
 });
 
 // PUT /api/products/:id
-router.put('/:id', authenticate, requireRole('admin'), upload.single('image'), async (req, res) => {
+router.put('/:id', authenticate, requirePermission('manage_menu'), upload.single('image'), async (req, res) => {
   try {
     const { category_id, sku, name, selling_price, description, is_active } = req.body;
     const p = await db.prepare('SELECT * FROM products WHERE id = ?').get(req.params.id);
@@ -155,7 +155,7 @@ router.put('/:id', authenticate, requireRole('admin'), upload.single('image'), a
 });
 
 // DELETE /api/products/:id
-router.delete('/:id', authenticate, requireRole('admin'), async (req, res) => {
+router.delete('/:id', authenticate, requirePermission('manage_menu'), async (req, res) => {
   try {
     await db.prepare('DELETE FROM products WHERE id = ?').run(req.params.id);
     res.json({ message: 'Menu berhasil dihapus.' });
