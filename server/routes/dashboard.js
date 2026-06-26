@@ -13,12 +13,12 @@ router.get('/', authenticate, async (req, res) => {
 
     if (req.user.role === 'admin') {
       // Owner dashboard
-      const todayRevenue = (await db.prepare("SELECT COALESCE(SUM(total),0) as val FROM sales WHERE date(sold_at) = ?").get(today)).val;
-      const monthRevenue = (await db.prepare("SELECT COALESCE(SUM(total),0) as val FROM sales WHERE strftime('%Y-%m', sold_at) = ?").get(currentMonth)).val;
-      const yearRevenue = (await db.prepare("SELECT COALESCE(SUM(total),0) as val FROM sales WHERE strftime('%Y', sold_at) = ?").get(currentYear)).val;
-      const todayProfit = (await db.prepare("SELECT COALESCE(SUM(profit_total),0) as val FROM sales WHERE date(sold_at) = ?").get(today)).val;
-      const monthProfit = (await db.prepare("SELECT COALESCE(SUM(profit_total),0) as val FROM sales WHERE strftime('%Y-%m', sold_at) = ?").get(currentMonth)).val;
-      const todayTransactions = (await db.prepare("SELECT COUNT(*) as val FROM sales WHERE date(sold_at) = ?").get(today)).val;
+      const todayRevenue = (await db.prepare("SELECT COALESCE(SUM(total),0) as val FROM sales WHERE date(sold_at) = ? AND status = 'success'").get(today)).val;
+      const monthRevenue = (await db.prepare("SELECT COALESCE(SUM(total),0) as val FROM sales WHERE strftime('%Y-%m', sold_at) = ? AND status = 'success'").get(currentMonth)).val;
+      const yearRevenue = (await db.prepare("SELECT COALESCE(SUM(total),0) as val FROM sales WHERE strftime('%Y', sold_at) = ? AND status = 'success'").get(currentYear)).val;
+      const todayProfit = (await db.prepare("SELECT COALESCE(SUM(profit_total),0) as val FROM sales WHERE date(sold_at) = ? AND status = 'success'").get(today)).val;
+      const monthProfit = (await db.prepare("SELECT COALESCE(SUM(profit_total),0) as val FROM sales WHERE strftime('%Y-%m', sold_at) = ? AND status = 'success'").get(currentMonth)).val;
+      const todayTransactions = (await db.prepare("SELECT COUNT(*) as val FROM sales WHERE date(sold_at) = ? AND status = 'success'").get(today)).val;
 
       // Top 5 Menu
       const topMenu = await db.prepare(`
@@ -26,7 +26,7 @@ router.get('/', authenticate, async (req, res) => {
         FROM sale_items si
         JOIN products p ON si.product_id = p.id
         JOIN sales s ON si.sale_id = s.id
-        WHERE date(s.sold_at) >= date('now', '-30 days', 'localtime')
+        WHERE date(s.sold_at) >= date('now', '-30 days', 'localtime') AND s.status = 'success'
         GROUP BY p.id ORDER BY qty DESC LIMIT 5
       `).all();
 
@@ -44,7 +44,7 @@ router.get('/', authenticate, async (req, res) => {
       const last7Days = await db.prepare(`
         SELECT date(sold_at) as date, SUM(total) as revenue, SUM(profit_total) as profit
         FROM sales
-        WHERE date(sold_at) >= date('now', '-6 days', 'localtime')
+        WHERE date(sold_at) >= date('now', '-6 days', 'localtime') AND status = 'success'
         GROUP BY date(sold_at) ORDER BY date ASC
       `).all();
 
@@ -52,7 +52,7 @@ router.get('/', authenticate, async (req, res) => {
       const monthlyRevenue = await db.prepare(`
         SELECT strftime('%Y-%m', sold_at) as month, SUM(total) as revenue
         FROM sales
-        WHERE sold_at >= date('now', '-6 months', 'localtime')
+        WHERE sold_at >= date('now', '-6 months', 'localtime') AND status = 'success'
         GROUP BY strftime('%Y-%m', sold_at) ORDER BY month ASC
       `).all();
 
@@ -61,7 +61,7 @@ router.get('/', authenticate, async (req, res) => {
         SELECT pm.name as method, COUNT(*) as count, SUM(s.total) as total
         FROM sales s
         JOIN payment_methods pm ON s.payment_method_id = pm.id
-        WHERE date(s.sold_at) = ?
+        WHERE date(s.sold_at) = ? AND s.status = 'success'
         GROUP BY pm.id
       `).all(today);
 
@@ -81,12 +81,12 @@ router.get('/', authenticate, async (req, res) => {
       });
     } else {
       // Cashier dashboard
-      const todayTransactions = (await db.prepare("SELECT COUNT(*) as val FROM sales WHERE date(sold_at) = ? AND cashier_id = ?").get(today, req.user.id)).val;
+      const todayTransactions = (await db.prepare("SELECT COUNT(*) as val FROM sales WHERE date(sold_at) = ? AND cashier_id = ? AND status = 'success'").get(today, req.user.id)).val;
       const todayItems = (await db.prepare(`
         SELECT COALESCE(SUM(si.qty), 0) as val
         FROM sale_items si
         JOIN sales s ON si.sale_id = s.id
-        WHERE date(s.sold_at) = ? AND s.cashier_id = ?
+        WHERE date(s.sold_at) = ? AND s.cashier_id = ? AND s.status = 'success'
       `).get(today, req.user.id)).val;
 
       const popularToday = await db.prepare(`
@@ -94,7 +94,7 @@ router.get('/', authenticate, async (req, res) => {
         FROM sale_items si
         JOIN products p ON si.product_id = p.id
         JOIN sales s ON si.sale_id = s.id
-        WHERE date(s.sold_at) = ?
+        WHERE date(s.sold_at) = ? AND s.status = 'success'
         GROUP BY p.id ORDER BY qty DESC LIMIT 5
       `).all(today);
 
