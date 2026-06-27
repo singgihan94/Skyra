@@ -122,31 +122,14 @@ export default function POS() {
         ];
 
         // Logo and Header Toko
-        let printedStoreName = false;
-        if (storeSettings.store_logo_url) {
-          try {
-            const logoUrl = storeSettings.store_logo_url.startsWith('http')
-              ? storeSettings.store_logo_url
-              : `${window.location.origin}${storeSettings.store_logo_url}`;
-            const logoCmds = await imageToEscPos(logoUrl, 200, { text: storeSettings.store_name });
-            cmds = cmds.concat(logoCmds);
-            cmds.push(encoder.encode('\n'));
-            printedStoreName = true;
-          } catch (logoErr) {
-            console.warn('Logo print failed, skipping:', logoErr);
-          }
-        }
-
-        if (!printedStoreName) {
-          cmds = cmds.concat([
-            new Uint8Array([ESC, 0x61, 0x01]),    // Center (re-set after image)
-            new Uint8Array([ESC, 0x45, 0x01]),    // Bold
-            new Uint8Array([GS, 0x21, 0x11]),     // 2x width+height
-            encoder.encode(`${storeSettings.store_name}\n`),
-            new Uint8Array([GS, 0x21, 0x00]),     // Normal size
-            new Uint8Array([ESC, 0x45, 0x00]),    // Bold off
-          ]);
-        }
+        cmds = cmds.concat([
+          new Uint8Array([ESC, 0x61, 0x01]),    // Center
+          new Uint8Array([ESC, 0x45, 0x01]),    // Bold
+          new Uint8Array([GS, 0x21, 0x11]),     // 2x width+height
+          encoder.encode(`${storeSettings.store_name}\n`),
+          new Uint8Array([GS, 0x21, 0x00]),     // Normal size
+          new Uint8Array([ESC, 0x45, 0x00]),    // Bold off
+        ]);
 
         if (storeSettings.store_address) {
           cmds.push(encoder.encode(`${storeSettings.store_address}\n`));
@@ -156,6 +139,16 @@ export default function POS() {
           encoder.encode(`\n${receipt.invoice_no}\n`),
           encoder.encode(`${new Date(receipt.sold_at).toLocaleString('id-ID')}\n`),
           encoder.encode(`Kasir: ${receipt.cashier || 'Kasir'}\n`),
+        ]);
+
+        if (receipt.customer_name) {
+          cmds.push(encoder.encode(`Pelanggan: ${receipt.customer_name}\n`));
+        }
+        if (receipt.notes) {
+          cmds.push(encoder.encode(`Catatan: ${receipt.notes}\n`));
+        }
+
+        cmds = cmds.concat([
           encoder.encode('--------------------------------\n'),
           new Uint8Array([ESC, 0x61, 0x00]), // Left align
         ]);
@@ -434,6 +427,8 @@ export default function POS() {
                   <p style={{ fontSize: '0.75rem', color: '#888' }}>{showReceipt.invoice_no}</p>
                   <p style={{ fontSize: '0.75rem', color: '#888' }}>{new Date(showReceipt.sold_at).toLocaleString('id-ID')}</p>
                   <p style={{ fontSize: '0.75rem', color: '#888' }}>Kasir: {showReceipt.cashier}</p>
+                  {showReceipt.customer_name && <p style={{ fontSize: '0.75rem', color: '#888' }}>Pelanggan: {showReceipt.customer_name}</p>}
+                  {showReceipt.notes && <p style={{ fontSize: '0.75rem', color: '#888' }}>Catatan: {showReceipt.notes}</p>}
                 </div>
                 <div className="receipt-divider" />
                 {showReceipt.items?.map((item, i) => (
@@ -473,6 +468,9 @@ export default function POS() {
               {storeSettings.store_address && <p style={{ fontSize: '8pt', margin: 0 }}>{storeSettings.store_address}</p>}
               <p style={{ fontSize: '9pt', margin: 0 }}>{showReceipt.invoice_no}</p>
               <p style={{ fontSize: '8pt', margin: 0 }}>{new Date(showReceipt.sold_at).toLocaleString('id-ID')}</p>
+              <p style={{ fontSize: '8pt', margin: 0 }}>Kasir: {showReceipt.cashier}</p>
+              {showReceipt.customer_name && <p style={{ fontSize: '8pt', margin: 0 }}>Pelanggan: {showReceipt.customer_name}</p>}
+              {showReceipt.notes && <p style={{ fontSize: '8pt', margin: 0 }}>Catatan: {showReceipt.notes}</p>}
             </div>
             <div className="divider" />
             <div className="row" style={{ fontWeight: 'bold' }}>

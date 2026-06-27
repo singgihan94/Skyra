@@ -175,6 +175,7 @@ router.post('/sale', authenticate, async (req, res) => {
         cashier: req.user.name,
         payment_method: paymentMethod?.name || 'Unknown',
         customer_name: customer_name || null,
+        notes: notes || null,
         items: processedItems,
         subtotal,
         discount_amount: disc,

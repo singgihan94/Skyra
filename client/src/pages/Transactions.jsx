@@ -73,32 +73,15 @@ export default function Transactions() {
         new Uint8Array([ESC, 0x61, 0x01]),    // Center
       ];
 
-      // Logo and Header Toko
-      let printedStoreName = false;
-      if (storeSettings.store_logo_url) {
-        try {
-          const logoUrl = storeSettings.store_logo_url.startsWith('http')
-            ? storeSettings.store_logo_url
-            : `${window.location.origin}${storeSettings.store_logo_url}`;
-          const logoCmds = await imageToEscPos(logoUrl, 200, { text: storeSettings.store_name });
-          cmds = cmds.concat(logoCmds);
-          cmds.push(encoder.encode('\n'));
-          printedStoreName = true;
-        } catch (logoErr) {
-          console.warn('Logo print failed:', logoErr);
-        }
-      }
-
-      if (!printedStoreName) {
-        cmds = cmds.concat([
-          new Uint8Array([ESC, 0x61, 0x01]),    // Center 
-          new Uint8Array([ESC, 0x45, 0x01]),    // Bold
-          new Uint8Array([GS, 0x21, 0x11]),     // 2x width+height
-          encoder.encode(`${storeSettings.store_name}\n`),
-          new Uint8Array([GS, 0x21, 0x00]),     // Normal size
-          new Uint8Array([ESC, 0x45, 0x00]),    // Bold off
-        ]);
-      }
+      // Header Toko
+      cmds = cmds.concat([
+        new Uint8Array([ESC, 0x61, 0x01]),    // Center 
+        new Uint8Array([ESC, 0x45, 0x01]),    // Bold
+        new Uint8Array([GS, 0x21, 0x11]),     // 2x width+height
+        encoder.encode(`${storeSettings.store_name}\n`),
+        new Uint8Array([GS, 0x21, 0x00]),     // Normal size
+        new Uint8Array([ESC, 0x45, 0x00]),    // Bold off
+      ]);
 
       if (storeSettings.store_address) {
         cmds.push(encoder.encode(`${storeSettings.store_address}\n`));
@@ -109,6 +92,16 @@ export default function Transactions() {
         encoder.encode(`\n${receipt.invoice_no} (Copy)\n`),
         encoder.encode(`${new Date(receipt.sold_at).toLocaleString('id-ID')}\n`),
         encoder.encode(`Kasir: ${receipt.cashier_name || 'Kasir'}\n`),
+      ]);
+
+      if (receipt.customer_name) {
+        cmds.push(encoder.encode(`Pelanggan: ${receipt.customer_name}\n`));
+      }
+      if (receipt.notes) {
+        cmds.push(encoder.encode(`Catatan: ${receipt.notes}\n`));
+      }
+
+      cmds = cmds.concat([
         encoder.encode('--------------------------------\n'),
         new Uint8Array([ESC, 0x61, 0x00]), // Left align
       ]);
