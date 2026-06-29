@@ -107,6 +107,7 @@ a:hover { color: var(--accent-gold-hover); }
 .app-layout {
   display: flex;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
 }
@@ -706,6 +707,7 @@ a:hover { color: var(--accent-gold-hover); }
   grid-template-columns: 1fr 380px;
   gap: 20px;
   height: calc(100vh - var(--topbar-height));
+  height: calc(100dvh - var(--topbar-height));
   overflow: hidden;
 }
 
@@ -1008,6 +1010,7 @@ a:hover { color: var(--accent-gold-hover); }
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg-primary);
   padding: 20px;
   position: relative;

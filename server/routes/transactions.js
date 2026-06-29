@@ -7,7 +7,7 @@ const router = express.Router();
 // GET /api/transactions
 router.get('/', authenticate, async (req, res) => {
   try {
-    const { date_from, date_to, cashier_id, shift_id, limit: lim } = req.query;
+    const { date_from, date_to, cashier_id, shift_id, payment_method_id, limit: lim } = req.query;
     let sql = `
       SELECT s.*, u.name as cashier_name, pm.name as payment_method_name
       FROM sales s
@@ -21,6 +21,7 @@ router.get('/', authenticate, async (req, res) => {
     if (date_to) { sql += ' AND date(s.sold_at) <= ?'; params.push(date_to); }
     if (cashier_id) { sql += ' AND s.cashier_id = ?'; params.push(cashier_id); }
     if (shift_id) { sql += ' AND s.shift_id = ?'; params.push(shift_id); }
+    if (payment_method_id) { sql += ' AND s.payment_method_id = ?'; params.push(payment_method_id); }
 
     sql += ' ORDER BY s.sold_at DESC';
     if (lim) { sql += ' LIMIT ?'; params.push(parseInt(lim)); }

@@ -12,13 +12,16 @@ export default function Transactions() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [cashierId, setCashierId] = useState('');
+  const [paymentMethodId, setPaymentMethodId] = useState('');
   const [users, setUsers] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(false);
   const { btStatus, sendToPrinter } = useBluetooth();
 
 
   useEffect(() => { 
     load(); 
+    api.get('/api/pos/payment-methods').then(setPaymentMethods).catch(console.error);
     if (isAdmin) {
       api.get('/api/users').then(setUsers).catch(console.error);
     }
@@ -29,6 +32,7 @@ export default function Transactions() {
     if (dateFrom) url += `&date_from=${dateFrom}`;
     if (dateTo) url += `&date_to=${dateTo}`;
     if (cashierId) url += `&cashier_id=${cashierId}`;
+    if (paymentMethodId) url += `&payment_method_id=${paymentMethodId}`;
     setTransactions(await api.get(url));
   }
 
@@ -205,6 +209,13 @@ export default function Transactions() {
               </select>
             </div>
           )}
+          <div className="form-group" style={{ margin: 0, minWidth: '150px' }}>
+            <label className="form-label">Metode Pembayaran</label>
+            <select className="form-input" value={paymentMethodId} onChange={e => setPaymentMethodId(e.target.value)}>
+              <option value="">Semua Metode</option>
+              {paymentMethods.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
           <button className="btn btn-primary btn-sm" onClick={handleFilter}><Filter size={14} /> Filter</button>
         </div>
       </div>
